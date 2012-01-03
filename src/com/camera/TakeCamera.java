@@ -62,6 +62,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 public class TakeCamera extends Activity implements SurfaceHolder.Callback
@@ -98,7 +99,7 @@ public class TakeCamera extends Activity implements SurfaceHolder.Callback
 	    timer = new Timer();
 
         //Checking Status
-        if (CheckInternet(3))
+        if (!CheckInternet(3))
         {
         	openOptionsDialog("connetion error by Internet");
         }
@@ -346,13 +347,13 @@ public class TakeCamera extends Activity implements SurfaceHolder.Callback
 	      try
 	      {
 	        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
-	        bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+	        bm.compress(Bitmap.CompressFormat.JPEG, 50, bos);
 	        
 	        bos.flush();	        
 	        bos.close();
-
-	        //uploadfile p = new uploadfile(filename);
-	        //p.start();
+	        
+	        uploadfile p = new uploadfile(filename);
+	        p.start();
 	        
 	        resetCamera();        
 	        initCamera();
@@ -478,6 +479,8 @@ public class TakeCamera extends Activity implements SurfaceHolder.Callback
 	        	            //
 	        	            // Store file to server
 	        	            //
+	        	            client.setFileType(FTP.BINARY_FILE_TYPE);
+
 	        	            client.storeFile(strfile, fis);
 	        	            client.logout();
         	            }     
@@ -486,7 +489,7 @@ public class TakeCamera extends Activity implements SurfaceHolder.Callback
 	        	        }			    	  
 			    	
 		              //delete
-		              delFile(file.getName());
+		              delFile(strCaptureFilePath + strfile);
 			    }
 		    	
 		  }
